@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="这一次将会更加详细地介绍Java反射(Reflection)的相关API的使用方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初步认识Java反射（二）">
+<meta property="og:url" content="http://yoursite.com/2018/04/20/初步认识Java反射（二）/index.html">
+<meta property="og:site_name" content="Philip&#39;s blog">
+<meta property="og:description" content="这一次将会更加详细地介绍Java反射(Reflection)的相关API的使用方法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-20T12:49:34.173Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初步认识Java反射（二）">
+<meta name="twitter:description" content="这一次将会更加详细地介绍Java反射(Reflection)的相关API的使用方法。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/20/初步认识Java反射（二）/"/>
+
+
+
+
+
+  <title>初步认识Java反射（二） | Philip's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Philip's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/20/初步认识Java反射（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Philip">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Philip's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">初步认识Java反射（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-20T20:45:30+08:00">
+                2018-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这一次将会更加详细地介绍Java反射(Reflection)的相关API的使用方法。<a id="more"></a><br>内容参考自<a href="https://www.jianshu.com/p/2315dda64ad2" target="_blank" rel="noopener">https://www.jianshu.com/p/2315dda64ad2</a></p>
+<h1 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h1><p>在对一个类进行反射操作之前，首先需要获得其Class对象，Class对象有两种获取方法：<br>Class对象<code>cls</code>的类型为<code>Class&lt;?&gt;</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cls = A.class;</span><br></pre></td></tr></table></figure></p>
+<p>或者是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cls = Class.forName(&quot;com.example.A&quot;);</span><br></pre></td></tr></table></figure></p>
+<h1 id="类名"><a href="#类名" class="headerlink" title="类名"></a>类名</h1><p>你可以获取两种类型的类名，一种包含包名，一种不包含。<br>包含包名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cls.getName();</span><br></pre></td></tr></table></figure></p>
+<p>不包含包名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cls.getSimpleName();</span><br></pre></td></tr></table></figure></p>
+<h1 id="修饰符"><a href="#修饰符" class="headerlink" title="修饰符"></a>修饰符</h1><p>你也可以知道一个类的修饰符：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int modifiers = cls.getModifiers();</span><br></pre></td></tr></table></figure></p>
+<p>modifiers是一个int类型的数字，包含修饰符的相关信息，通过以下方法可以将信息解读出来：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 是否是public的</span><br><span class="line">Modifier.isPublic(modifiers);</span><br><span class="line">// 是否是抽象的</span><br><span class="line">Modifier.isAbstract(modifiers);</span><br></pre></td></tr></table></figure></p>
+<p>Modifier类中还有更多告知修饰符信息的方法，需要时可以查看API手册。</p>
+<h1 id="包信息"><a href="#包信息" class="headerlink" title="包信息"></a>包信息</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取Package对象</span><br><span class="line">Package pkg = cls.getPackage();</span><br></pre></td></tr></table></figure>
+<p>通过Package对象你可以获得包的相关信息，比如包名，想了解更多Package的信息请查看API手册。</p>
+<h1 id="父类"><a href="#父类" class="headerlink" title="父类"></a>父类</h1><p>你也可以获取当前类父类的Class对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; superclass = cls.getSuperclass();</span><br></pre></td></tr></table></figure></p>
+<p>然后你可以继续在父类的基础上进行反射操作。</p>
+<h1 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h1><p>你还可以获取当前类实现的接口集合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt;[] interfaces = cls.getInterfaces();</span><br></pre></td></tr></table></figure></p>
+<p>接口同样也是Class对象，所以类型也是Class&lt;?&gt;，并且因为一个类可以实现多个接口，所以是一个数组。注意这个方法不会把父类实现的接口也加进来，它只能获取当前类实现的接口。</p>
+<h1 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取所有public的构造方法</span><br><span class="line">Constructor[] constructors = cls.getConstructors();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取只有一个参数，且参数类型为int的构造方法</span><br><span class="line">constructorInt = cls.getConstructor(new Class[] &#123;int.class&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取构造方法的参数信息，参数信息的类型是一个Class对象数组</span><br><span class="line">Class&lt;?&gt;[] parameterTypes = constructor.getParameterTypes();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 实例化一个类，newInstance中的参数即为与构造方法对应的实参</span><br><span class="line">A a = (A) constructorInt.newInstance(9);</span><br></pre></td></tr></table></figure>
+<h1 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取所有public方法</span><br><span class="line">Method[] methods = cls.getMethods();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取指定的Method对象，第一个参数是方法名，第二个参数是方法的参数列表</span><br><span class="line">doSomething = cls.getMethod(&quot;doSomething&quot;, new Class[] &#123;int.class&#125;);</span><br></pre></td></tr></table></figure>
+<p>注意Method和Constructor的不同，所有用来获取Method对象的方法都不能用来获取Constructor对象，两者不能混淆。另外，还有两个和getMethods()和getMethod()非常相似的方法，分别是getDeclaredMethods()和getDeclaredMethod()，后面两个方法与前面两个方法都可以获得public方法，它们的区别在于后面两个会获得非public方法，而前面两个不行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取方法的参数信息，和构造方法的此方法差不多</span><br><span class="line">Class&lt;?&gt;[] parameterTypes = doSomething.getParameterTypes();</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 获取返回值的Class对象</span><br><span class="line">Class returnType = doSomething.getReturnType();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// obj是A类的对象</span><br><span class="line">obj = cls.getConstructor().newInstance();</span><br><span class="line">// 执行doSomething方法，invoke中填入对应的实参</span><br><span class="line">returnValue = doSomething.invoke(obj, 66);</span><br></pre></td></tr></table></figure>
+<p>接下来介绍一下如何执行一个对象的非public方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 目标对象</span><br><span class="line">A a = new A(36);</span><br><span class="line">// 获取A类中的private方法</span><br><span class="line">getIPrivate = cls.getDeclaredMethod(&quot;getIPrivate&quot;);</span><br><span class="line">// 设置为可访问</span><br><span class="line">getIPrivate.setAccessible(true);</span><br><span class="line">// 执行getIPrivate方法，类似a.getIPrivate();</span><br><span class="line">getIPrivateValue = (int) getIPrivate.invoke(a);</span><br></pre></td></tr></table></figure></p>
+<h1 id="域"><a href="#域" class="headerlink" title="域"></a>域</h1><p>获取域(Field)的方法和获取方法(Method)的方法很相似，也有getField()、getFields()、getDeclaredField()、getDeclaredFields()这些方法，功能也很相似。<br>现在介绍一下获取一个对象的非public域：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 目标对象</span><br><span class="line">A a = new A(33);</span><br><span class="line">// 获取i这个域</span><br><span class="line">fieldInt = cls.getDeclaredField(&quot;i&quot;);</span><br><span class="line">// 设置为可访问</span><br><span class="line">fieldInt.setAccessible(true);</span><br><span class="line">// 获取a对象中i的值，类似a.i;</span><br><span class="line">fieldIntValue = (int) fieldInt.get(a);</span><br></pre></td></tr></table></figure></p>
+<h1 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h1><p>泛型和反射有什么关系呢？利用反射可以知道泛型的具体类型，比如<code>List&lt;String&gt; stringList</code>定义了一个泛型为String的List，利用反射就可以知道这个List的泛型具体是什么。<br>类A中有这样一个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void setStringList(List&lt;String&gt; stringList) &#123;</span><br><span class="line">	this.stringList = stringList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在我要通过反射知道这个方法的参数List的泛型的具体类型。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 获取setStringList这个方法</span><br><span class="line">setStringList = cls.getMethod(&quot;setStringList&quot;, List.class);</span><br><span class="line">// 获取setStringList这个方法的参数信息</span><br><span class="line">Type[] genericParameterTypes = setStringList.getGenericParameterTypes();</span><br><span class="line">for (Type genericParameterType : genericParameterTypes) &#123;</span><br><span class="line">	// 判断genericParameterType是否是参数化类型，如果是就继续。</span><br><span class="line">	// 至于参数化类型到底是什么意思，我不是很清楚，大概是字面上的意思，就是类型不是固定的，可以用参数来设置它的意思。</span><br><span class="line">	if (genericParameterType instanceof ParameterizedType) &#123;</span><br><span class="line">		// 向下转型为ParameterizedType</span><br><span class="line">		ParameterizedType aType = (ParameterizedType) genericParameterType;</span><br><span class="line">		// 获取实际类型参数，就是&lt;&gt;里面的东西了</span><br><span class="line">		Type[] parameterArgumentTypes = aType.getActualTypeArguments();</span><br><span class="line">		for (Type parameterArgumentType : parameterArgumentTypes) &#123;</span><br><span class="line">			// 向下转型为Class&lt;?&gt;</span><br><span class="line">			Class&lt;?&gt; parameterArgumentClass = (Class&lt;?&gt;) parameterArgumentType;</span><br><span class="line">			// 输出parameterArgumentClass的名字</span><br><span class="line">			getSimpleClassName(parameterArgumentClass);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/20/初步认识Java反射（一）/" rel="next" title="初步认识Java反射（一）">
+                <i class="fa fa-chevron-left"></i> 初步认识Java反射（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Philip</p>
+              <p class="site-description motion-element" itemprop="description">Do something meaningful.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Class对象"><span class="nav-number">1.</span> <span class="nav-text">Class对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类名"><span class="nav-number">2.</span> <span class="nav-text">类名</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修饰符"><span class="nav-number">3.</span> <span class="nav-text">修饰符</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#包信息"><span class="nav-number">4.</span> <span class="nav-text">包信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#父类"><span class="nav-number">5.</span> <span class="nav-text">父类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口"><span class="nav-number">6.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造方法"><span class="nav-number">7.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法"><span class="nav-number">8.</span> <span class="nav-text">方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#域"><span class="nav-number">9.</span> <span class="nav-text">域</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#泛型"><span class="nav-number">10.</span> <span class="nav-text">泛型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Philip</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
